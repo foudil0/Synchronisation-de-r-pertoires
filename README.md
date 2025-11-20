@@ -16,9 +16,9 @@ L’application côté client doit :
 
 Fonctionnalités indispensables pour obtenir une version fonctionnelle de base.
 
- Fonctionnalité | Description 
+ Fonctionnalité | Description | Modules bib standart | Modules bib tierce | Outils indépendant
 ----------------|-------------|
- Surveillance des fichiers locaux | Détecter toute modification (création, suppression, modification) dans un répertoire. | 
+ Surveillance des fichiers locaux | Détecter toute modification (création, suppression, modification) dans un répertoire. |  os, pathlib, time: limites: pas de surveillance en temps réel, installation: deja inclus, utilisation: simple mais primitive, comptabilité parfaite, maintenance est documentation est excellente
 Création automatique de commits | Enregistrer les changements détectés sous forme de commits locaux. |
 Push vers le serveur Git | Envoyer les commits locaux sur le serveur central. |
  Pull depuis le serveur Git | Récupérer les mises à jour effectuées sur le serveur. |
@@ -37,4 +37,6 @@ Interface de configuration | Choisir le répertoire à surveiller et la fréquen
  Notifications utilisateur | Prévenir l’utilisateur en cas de conflit ou d’erreur. |
 
 ---
+
+
 
