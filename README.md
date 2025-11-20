@@ -13,11 +13,12 @@ L’application côté client doit :
 ---
 
 ## Noyau minimal
+###HELLO
 
 Fonctionnalités indispensables pour obtenir une version fonctionnelle de base.
 
  Fonctionnalité | Description | Modules bib standart | Modules bib tierce | Outils indépendant
-----------------|-------------|
+ 
  Surveillance des fichiers locaux | Détecter toute modification (création, suppression, modification) dans un répertoire. |  os, pathlib, time: limites: pas de surveillance en temps réel, installation: deja inclus, utilisation: simple mais primitive, comptabilité parfaite, maintenance est documentation est excellente
 Création automatique de commits | Enregistrer les changements détectés sous forme de commits locaux. |
 Push vers le serveur Git | Envoyer les commits locaux sur le serveur central. |
