@@ -38,7 +38,7 @@ Interface de configuration | Choisir le répertoire à surveiller et la fréquen
 
 ---
 
-## Comparaisons: 
+## Librairies: 
 
 #### Os, pathlib, time: 
 - **Service rendu:** parcourir les repertoires, lire les fichiers, et verifier les dates de modification
