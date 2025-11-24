@@ -1,4 +1,5 @@
 .env
+venv
 venv/
 tracked_repos.json
 __pycache__/
