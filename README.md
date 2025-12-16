@@ -1,108 +1,209 @@
-# Synchronisation de répertoires
+# Synchronisation de Répertoires - L3 Projet
 
-## Objectif du projet
+Synchronisation automatique de répertoires locaux vers des dépôts GitHub privés avec gestion des conflits et surveillance en temps réel.
 
-Développer un outil permettant la **synchronisation automatique de répertoires entre plusieurs machines** en utilisant un **serveur Git** pour centraliser les fichiers.
+## 👥 Équipe
 
-L'application côté client doit :
-- surveiller les fichiers locaux ;
-- créer automatiquement des commits en cas de modification ;
-- synchroniser les changements avec le serveur (push/pull) ;
-- gérer les conflits éventuels.
+| Nom | Prénom | Rôle |
+|-----|--------|------|
+| IDIR | Salah | Surveillance et synchronisation (`watch_and_sync.py`), Gestion des conflits |
+| HOCINI | Foudil | Configuration, État, Opérations Git de base |
 
----
+## 📋 Structure du Projet
 
-## Répartition des tâches
+```
+.
+├── sync_script.py              # Script principal de synchronisation Git
+├── watch_and_sync.py           # Surveillance des changements en temps réel
+├── tracked_repos.json          # État des projets synchronisés
+├── group.csv                   # Informations du groupe
+├── .env                        # Variables d'environnement (token GitHub)
+├── .gitignore                  # Fichiers à ignorer
+└── README.md                   
+```
 
-| Étudiant | Partie du projet | Fichiers concernés | Librairies utilisées |
-|----------|------------------|---------------------|----------------------|
-| **Hocini Foudil** | **"Setup & One-time Sync" System** | `sync_script.py`, `test_script.py` | `datetime`, `os`, `json`, `python-dotenv`, `GitPython`, `PyGithub` |
-| **Salah Idir** | **"Real-time Watcher" System** | `watcher_script.py` | `watchdog`, `threading`, `time`, `datetime`, `traceback` |
+## 📦 Dépendances
 
----
+Le projet utilise les bibliothèques Python suivantes :
 
-## Noyau minimal 
+| Bibliothèque | Utilisation |
+|--------------|-----------|
+| `GitPython` | Opérations Git (commit, push, pull) |
+| `PyGithub` | Création et gestion des dépôts GitHub |
+| `python-dotenv` | Chargement des variables d'environnement |
+| `watchdog` | Surveillance des changements de fichiers en temps réel |
 
-Fonctionnalités indispensables pour obtenir une version fonctionnelle de base.
+### Installation des dépendances
 
-| Fonctionnalité | Description | Python standard | Bib tierce | Outils indépendants |
-|----------------|-------------|-----------------|------------|----------------------|
-| Surveillance des fichiers locaux | Détecter toute modification (création, suppression, modification) dans un répertoire. | `os`, `pathlib`, `time` | `watchdog` | `inotifywait` |
-| Création automatique de commits | Enregistrer les changements détectés sous forme de commits locaux. | `subprocess` (commandes git) | `GitPython` | `pygit2` |
-| Push vers le serveur Git | Envoyer les commits locaux sur le serveur central. | `subprocess` (commandes git) | `GitPython` | `pygit2` |
-| Pull depuis le serveur Git | Récupérer les mises à jour effectuées sur le serveur. | `subprocess` (commandes git) | `GitPython` | `pygit2` |
-| Gestion des conflits | Détecter les conflits et créer une duplication des fichiers concernés. | | `GitPython` | |
+```bash
+pip install GitPython PyGithub python-dotenv watchdog
+```
 
----
+## 🚀 Configuration et Démarrage
 
-## Fonctionnalités complémentaires
+### 1. Configuration des variables d'environnement
 
-Fonctionnalités qui viennent enrichir le noyau minimal sans être indispensables au fonctionnement de base.
+Créez un fichier `.env` à la racine du projet :
 
-| Fonctionnalité | Description | Python standard | Bib tierce | Outils indépendants |
-|----------------|-------------|-----------------|------------|----------------------|
-| Interface de configuration | Choisir le répertoire à surveiller et la fréquence de synchronisation. | `json` | `PyMAL`, `tkinter`, `PyQt6` | |
-| Journal d'activité | Enregistrer les actions (commits, push, pull, conflits). | `logging` | `loguru` | |
-| Notifications utilisateur | Prévenir l'utilisateur en cas de conflit ou d'erreur. | | `plyer`, `win10toast` | `notify-send` (Linux) |
+```env
+GITHUB_API_TOKEN=votre_token_github
+GITHUB_USERNAME=votre_nom_utilisateur
+GITHUB_EMAIL=votre_email@example.com
+```
 
----
 
-## Librairies utilisées dans notre projet
+### 2. Structure des répertoires
 
-### **Partie 1: "Setup & One-time Sync" System** (Hocini Foudil)
+Créez les répertoires parents à surveiller :
 
-| Librairie | Service rendu | Installation | Utilisation |
-|-----------|---------------|--------------|-------------|
-| **`datetime`** | Gestion des dates/heures pour les commits | Python standard | Simple |
-| **`os`** | Parcourir répertoires, lire fichiers, vérifier dates | Python standard | Simple |
-| **`json`** | Sauvegarde/chargement état de synchronisation | Python standard | Simple |
-| **`python-dotenv`** | Chargement variables d'environnement | `pip install python-dotenv` | Simple |
-| **`GitPython`** | API Git: `repo.is_dirty()`, `repo.git.add()`, `repo.index.commit()` | `pip install GitPython` | Simple, automatisation Git |
-| **`PyGithub`** | Interaction avec GitHub API (création repos, gestion) | `pip install PyGithub` | Simple, gestion GitHub |
+```bash
+mkdir -p ../Projects_test
+```
 
-**Limites:**
-- GitPython: Lent sur gros dépôts
-- PyGithub: Nécessite token GitHub
+Placez vos projets dans ce répertoire :
 
-### **Partie 2: "Real-time Watcher" System** (À déterminer)
+```
+../Projects_test/
+├── Projet1/
+├── Projet2/
+└── Projet3/
+```
 
-| Librairie | Service rendu | Installation | Utilisation |
-|-----------|---------------|--------------|-------------|
-| **`watchdog`** | Surveillance temps réel des événements système | `pip install watchdog` | Simple, événementiel |
-| **`threading`** | Gestion timers et opérations asynchrones | Python standard | Complexe (concurrence) |
-| **`time`** | Gestion délais et débouncing | Python standard | Simple |
-| **`datetime`** | Horodatage événements | Python standard | Simple |
-| **`traceback`** | Debugging et gestion erreurs | Python standard | Simple |
+### 3. Exécution
 
-**Limites:**
-- Watchdog: Dépend librairies natives (inotify sur Linux)
-- Threading: Gestion concurrence complexe
+#### Mode de surveillance en temps réel 
 
----
+```bash
+python watch_and_sync.py
+```
 
-## Librairies évaluées mais non retenues
+Le script va :
+- Surveiller les changements dans `../Projects_test/`
+- Détecter automatiquement les nouveaux projets
+- Synchroniser les modifications en temps réel avec un délai de 5 secondes
 
-| Librairie | Raison du non-choix |
-|-----------|----------------------|
-| **`inotifywait`** | Linux seulement, pas portable |
-| **`subprocess` + git** | Très fragile, gestion manuelle erreurs |
-| **`pygit2`** | Installation complexe, documentation limitée |
-| **`PyMAL`/`tkinter`/`PyQt6`** | Interface graphique non prioritaire |
-| **`loguru`** | `logging` standard suffisant |
+#### Mode de synchronisation unique
 
----
+```bash
+python sync_script.py
+```
 
-## Choix techniques justifiés
+Synchronise tous les projets une seule fois.
 
-### Pour la partie 1 (Setup & Sync):
-- **GitPython**: Meilleur équilibre simplicité/fonctionnalités
-- **PyGithub**: API officielle GitHub, bien documentée
-- **python-dotenv**: Sécurisation credentials
 
-### Pour la partie 2 (Watcher):
-- **watchdog**: Surveillance temps réel multiplateforme
-- **threading**: Nécessaire pour débouncing et non-blocage
+## 🔧 Fonctionnalités Principales
 
-### Commun aux deux parties:
-- **JSON**: Format simple pour état de synchronisation
-  
+### `sync_script.py`
+
+**Configuration & État :**
+- `load_config()` - Charge les variables d'environnement
+- `load_state()` / `save_state()` - Gère l'état des projets synchronisés dans `tracked_repos.json`
+
+**Opérations Git :**
+- `initialize_local_repo()` - Initialise un dépôt Git local
+- `push_updates()` - Pousse les modifications vers GitHub
+- `pull_updates()` - Récupère les changements distants
+- `has_uncommited_changes()` - Détecte les changements non committés
+
+**Gestion GitHub :**
+- `create_github_repo()` - Crée ou récupère un dépôt GitHub privé
+- `ensure_gitignore()` - Crée un `.gitignore` si absent
+
+**Gestion des Conflits :**
+- `handle_conflict_rename_local()` - Résout les conflits de fusion :
+  - Sauvegarde la version locale avec un timestamp
+  - Accepte la version distante
+  - Crée un merge commit automatique
+
+### `watch_and_sync.py`
+
+**Surveillance :**
+- `ChangeHandler` - Détecte les modifications de fichiers
+- `on_modified()` / `on_created()` / `on_deleted()` - Événements de fichiers
+- `schedule_sync()` - Planifie la synchronisation avec délai de 5 secondes
+
+**Nouveaux Projets :**
+- Détection automatique des nouveaux répertoires
+- Création de dépôts GitHub automatiquement
+- Synchronisation initiale complète
+
+**Filtrage :**
+- Ignore les fichiers : `.git`, `__pycache__`, `.env`, `node_modules`, etc.
+
+## 📊 Fichier État (`tracked_repos.json`)
+
+Format du fichier de suivi :
+
+```json
+{
+    "/path/to/project": {
+        "repo_name": "project-name",
+        "repo_url": "https://token@github.com/username/project-name.git",
+        "last_sync": "2024-01-15T10:30:00+00:00"
+    }
+}
+```
+
+## ⚙️ Configuration Personnalisable
+
+### Dans `watch_and_sync.py`
+
+```python
+SYNC_DELAY = 5  # Délai avant synchronisation (secondes)
+PARENTS_DIR = ["../Projects_test"]  # Répertoires à surveiller
+```
+
+### Dans `sync_script.py`
+
+```python
+PARENT_DIRECTORIES = ["../Projects_test"]  # Répertoires à scanner
+BACKDATE_COMMITS_TO_FOLDER_DATE = False  # Antidater les commits
+```
+
+## 🛡️ Gestion des Conflits
+
+Quand un conflit de fusion est détecté :
+
+1. La version locale est sauvegardée avec un timestamp
+2. La version distante est acceptée
+3. Les deux fichiers sont committés
+4. Un merge commit est créé automatiquement
+
+**Exemple :**
+```
+fichier.txt → conflit détecté
+fichier_local_20240115_103000.txt → sauvegarde locale
+fichier.txt → contient la version distante
+```
+
+## 📝 Fichiers Ignorés
+
+Les fichiers suivants ne déclenchent pas de synchronisation :
+
+```
+.git, __pycache__, .pyc, .venv, venv, .env,
+node_modules, .DS_Store, tracked_repos.json, _local_
+```
+
+## 📚 Exemples d'Utilisation
+
+### Ajouter un nouveau projet
+
+```bash
+# 1. Créer le répertoire
+mkdir ../Projects_test/MonProjet
+
+# 2. Le script va :
+#    - Détecter le nouveau répertoire
+#    - Créer un dépôt GitHub automatiquement
+#    - Initialiser le repo Git local
+#    - Pousser les fichiers initiaux
+```
+
+### Modifier un projet existant
+
+```bash
+# Les modifications sont détectées et synchronisées automatiquement
+# en temps réel (délai de 5 secondes)
+```
+
