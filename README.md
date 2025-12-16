@@ -4,7 +4,7 @@
 
 Développer un outil permettant la **synchronisation automatique de répertoires entre plusieurs machines** en utilisant un **serveur Git** pour centraliser les fichiers.
 
-L’application côté client doit :
+L'application côté client doit :
 - surveiller les fichiers locaux ;
 - créer automatiquement des commits en cas de modification ;
 - synchroniser les changements avec le serveur (push/pull) ;
@@ -12,17 +12,26 @@ L’application côté client doit :
 
 ---
 
+## Répartition des tâches
+
+| Étudiant | Partie du projet | Fichiers concernés | Librairies utilisées |
+|----------|------------------|---------------------|----------------------|
+| **Hocini Foudil** | **"Setup & One-time Sync" System** | `sync_script.py`, `test_script.py` | `datetime`, `os`, `json`, `python-dotenv`, `GitPython`, `PyGithub` |
+| **Salah Idir** | **"Real-time Watcher" System** | `watcher_script.py` | `watchdog`, `threading`, `time`, `datetime`, `traceback` |
+
+---
+
 ## Noyau minimal 
 
 Fonctionnalités indispensables pour obtenir une version fonctionnelle de base.
 
- Fonctionnalité | Description |Pyhton standard | Bib tièrce | outils independants|
-----------------|-------------|----------------|------------|--------------------|
- Surveillance des fichiers locaux | Détecter toute modification (création, suppression, modification) dans un répertoire. | Os, pathlib, time | watchdog | inotifywait
-Création automatique de commits | Enregistrer les changements détectés sous forme de commits locaux. | subprocess et commandes git | GitPyhton | pygit2
-Push vers le serveur Git | Envoyer les commits locaux sur le serveur central. | subprocess et commandes git | GitPyhton | pygit2
- Pull depuis le serveur Git | Récupérer les mises à jour effectuées sur le serveur. |subprocess et commandes git | GitPyhton | pygit2
- Gestion des conflits | Détecter les conflits et créer une duplication des fichiers concernés. | | GitPyhton | 
+| Fonctionnalité | Description | Python standard | Bib tierce | Outils indépendants |
+|----------------|-------------|-----------------|------------|----------------------|
+| Surveillance des fichiers locaux | Détecter toute modification (création, suppression, modification) dans un répertoire. | `os`, `pathlib`, `time` | `watchdog` | `inotifywait` |
+| Création automatique de commits | Enregistrer les changements détectés sous forme de commits locaux. | `subprocess` (commandes git) | `GitPython` | `pygit2` |
+| Push vers le serveur Git | Envoyer les commits locaux sur le serveur central. | `subprocess` (commandes git) | `GitPython` | `pygit2` |
+| Pull depuis le serveur Git | Récupérer les mises à jour effectuées sur le serveur. | `subprocess` (commandes git) | `GitPython` | `pygit2` |
+| Gestion des conflits | Détecter les conflits et créer une duplication des fichiers concernés. | | `GitPython` | |
 
 ---
 
@@ -30,56 +39,70 @@ Push vers le serveur Git | Envoyer les commits locaux sur le serveur central. | 
 
 Fonctionnalités qui viennent enrichir le noyau minimal sans être indispensables au fonctionnement de base.
 
- Fonctionnalité | Description |Pyhton standard | Bib tièrce | outils independants|
-----------------|-------------|----------------|------------|--------------------|
-Interface de configuration | Choisir le répertoire à surveiller et la fréquence de synchronisation. |json|PyMAL,tkinter, PyQt6
- Journal d’activité | Enregistrer les actions (commits, push, pull, conflits). | logging | loguru
- Notifications utilisateur | Prévenir l’utilisateur en cas de conflit ou d’erreur. |
+| Fonctionnalité | Description | Python standard | Bib tierce | Outils indépendants |
+|----------------|-------------|-----------------|------------|----------------------|
+| Interface de configuration | Choisir le répertoire à surveiller et la fréquence de synchronisation. | `json` | `PyMAL`, `tkinter`, `PyQt6` | |
+| Journal d'activité | Enregistrer les actions (commits, push, pull, conflits). | `logging` | `loguru` | |
+| Notifications utilisateur | Prévenir l'utilisateur en cas de conflit ou d'erreur. | | `plyer`, `win10toast` | `notify-send` (Linux) |
 
 ---
 
-## Librairies: 
+## Librairies utilisées dans notre projet
 
-#### Os, pathlib, time: 
-- **Service rendu:** parcourir les repertoires, lire les fichiers, et verifier les dates de modification
-- **Limites:** pas de surveillence en temps reel, et n'est pas efficase sur de gros repertoires
-- **Installation:** deja incluse 
-- **Utilisation:** simple
-- **Comptabilité:** parfaite avec tous les OS
-- **Maintenance et doc:** excellente car c'est une bib pyhton standart
+### **Partie 1: "Setup & One-time Sync" System** (Hocini Foudil)
 
-#### Watchdog
-- **Service rendu:** Surveillence en temps reel des evenements
-- **Limites:** depends d'autres librairies natives (comme inotify sur Linux)
-- **Installation:** pip install watchdog
-- **Utilisation:** simple
-- **Comptabilité:** très bonne avec tous les OS
-- **Maintenance et doc:** Bien documentée
+| Librairie | Service rendu | Installation | Utilisation |
+|-----------|---------------|--------------|-------------|
+| **`datetime`** | Gestion des dates/heures pour les commits | Python standard | Simple |
+| **`os`** | Parcourir répertoires, lire fichiers, vérifier dates | Python standard | Simple |
+| **`json`** | Sauvegarde/chargement état de synchronisation | Python standard | Simple |
+| **`python-dotenv`** | Chargement variables d'environnement | `pip install python-dotenv` | Simple |
+| **`GitPython`** | API Git: `repo.is_dirty()`, `repo.git.add()`, `repo.index.commit()` | `pip install GitPython` | Simple, automatisation Git |
+| **`PyGithub`** | Interaction avec GitHub API (création repos, gestion) | `pip install PyGithub` | Simple, gestion GitHub |
 
-#### Inotifywait
-- **Service rendu:** Surveillence en temps reel ultra rapide
-- **Limites:** Linux seulement
-- **Maintenance et doc:** Bien documentée
+**Limites:**
+- GitPython: Lent sur gros dépôts
+- PyGithub: Nécessite token GitHub
 
---
+### **Partie 2: "Real-time Watcher" System** (À déterminer)
 
-#### Subprocess + commandes git:
-- **Service rendu:** excecuter commandes git 
-- **limites:** pas d'API git, gestion manuelle d'erreur, très très fragile
-- **Installation:** incluse
-- **Utilisation:** Simple 
-- **Comptabilité:** depend de Git installé sur la machine
+| Librairie | Service rendu | Installation | Utilisation |
+|-----------|---------------|--------------|-------------|
+| **`watchdog`** | Surveillance temps réel des événements système | `pip install watchdog` | Simple, événementiel |
+| **`threading`** | Gestion timers et opérations asynchrones | Python standard | Complexe (concurrence) |
+| **`time`** | Gestion délais et débouncing | Python standard | Simple |
+| **`datetime`** | Horodatage événements | Python standard | Simple |
+| **`traceback`** | Debugging et gestion erreurs | Python standard | Simple |
 
-#### GitPython:
-- **Services rendu:** Fonctions pour excecuter les commandes git **(repo.is_dirty(), repo.git.add(), repo.index.commit())** ainsi que la gestion des branches et conflits
-- **Limites:** Lente sur les gros depots
-- **installation:** pip install GitPython
-- **Utilisation:** simple, permet l'automatisation
-- **comptabilité:** tres bonne
-- **Maintenance et doc:** active depuis +10 ans 
+**Limites:**
+- Watchdog: Dépend librairies natives (inotify sur Linux)
+- Threading: Gestion concurrence complexe
 
-#### pygit2:
-- **Services rendu:** API Git avancées 
-- **limites:** Installation complexe
-- **Utilisation:** plus technique 
-- **Maintenance et doc:** pas très bonne au grand publique
+---
+
+## Librairies évaluées mais non retenues
+
+| Librairie | Raison du non-choix |
+|-----------|----------------------|
+| **`inotifywait`** | Linux seulement, pas portable |
+| **`subprocess` + git** | Très fragile, gestion manuelle erreurs |
+| **`pygit2`** | Installation complexe, documentation limitée |
+| **`PyMAL`/`tkinter`/`PyQt6`** | Interface graphique non prioritaire |
+| **`loguru`** | `logging` standard suffisant |
+
+---
+
+## Choix techniques justifiés
+
+### Pour la partie 1 (Setup & Sync):
+- **GitPython**: Meilleur équilibre simplicité/fonctionnalités
+- **PyGithub**: API officielle GitHub, bien documentée
+- **python-dotenv**: Sécurisation credentials
+
+### Pour la partie 2 (Watcher):
+- **watchdog**: Surveillance temps réel multiplateforme
+- **threading**: Nécessaire pour débouncing et non-blocage
+
+### Commun aux deux parties:
+- **JSON**: Format simple pour état de synchronisation
+  
